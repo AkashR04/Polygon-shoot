@@ -1,0 +1,25 @@
+Polygon shoot game:
+
+We are going to create a main game scene from a Node2D node and add it to a new scenes folder which will contain all the scenes.
+
+To check if it works grab a icon and drop it in the scene and run the current scene.
+
+Now for the aspect ratio and other project settings of the game:
+
+- Keep anti-aliasing to 4 times
+
+- In window we can keep Stretch mode to canvas_items.
+
+- To change background color go to rendering environment, I am using dark violet to give it that space feel.
+
+Now to create the player scene lets use characterbody2d node:
+
+- I am using polygon instead of sprites here:
+
+	- Use left click to draw the shape of the player
+
+	- Lets use HSV to color the polygon, I am going to use a very light green to make the player
+
+	- Now lets attach a collision shape to the player to get when anything collides with the player
+
+	- Attach a script to the player to give player behaviour
