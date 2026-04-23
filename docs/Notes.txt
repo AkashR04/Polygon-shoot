@@ -23,3 +23,72 @@ Now to create the player scene lets use characterbody2d node:
 	- Now lets attach a collision shape to the player to get when anything collides with the player
 
 	- Attach a script to the player to give player behaviour
+
+Player script:
+
+There is a function in godot called _physics_process and it is called by godot at a fixed rate 60 times per second as a default.
+
+This is not the games actual framerate it runs independently of it
+
+There are two types of processing in godot:
+
+- Idle processing which updates a node every frame, as often as possible
+
+- Physics processing happens at a fixed rate, 60 times per second by default. This is independent of your game's actual framerate, and keeps physics running smoothly. You should use it for anything that involves the physics engine, like moving a body that collides with the environment.
+
+- For idle processing use "func _process(delta):" delta is time elapsed in seconds since previous call to process
+
+- Physics processing works with a similar virtual function: _physics_process(). Use it for calculations that must happen before each physics step, like moving a character that collides with the game world. As mentioned above, _physics_process() runs at fixed time intervals as much as possible to keep the physics interactions stable. You can change the interval between physics steps in the Project Settings, under Physics -> Common -> Physics Fps. By default, it's set to run 60 times per second.
+
+- The engine calls this method before every physics step:
+
+	func _physics_process(delta):
+		# Do something...
+		pass
+Now to make the player move according to the direction of the mouse position:
+
+- We can use a function called "look_at()" and pass "get_global_mouse_position()" to rotate the player according to the mouse position
+
+- define velocity = transform.x * Input.get_axis("down","up") * speed
+
+This is how we can define movement of character altogether in the script:
+"""
+extends CharacterBody2D
+
+@export var speed = 400
+
+func get_input():
+	look_at(get_global_mouse_position())
+	velocity = transform.x * Input.get_axis("down", "up") * speed
+
+func _physics_process(delta):
+	get_input()
+	move_and_slide()
+"""
+
+Now how this works:
+
+- extends CharacterBody2D — this node provides physics-aware movement for 2D characters (has a velocity property and move_and_slide()).
+- @export var speed = 400 — exposes speed to the editor so you can tweak it.
+
+- func get_input():
+
+    - look_at(get_global_mouse_position()) — rotates the node to face the global mouse position.
+    - velocity = transform.x * Input.get_axis("down", "up") * speed — sets the CharacterBody2D.velocity:
+        
+	- transform.x is the node's local X axis as a Vector2 (a unit vector pointing in the node's forward/right direction after rotation from look_at()).
+
+	- Input.get_axis("down", "up") returns a float in [-1, 1] based on those input actions (positive when "down" is pressed, negative when "up" is pressed).
+        
+	- Multiplying gives a velocity vector along the node's forward direction scaled by the axis value and speed.
+
+Result: pressing the "down" or "up" actions moves the character forward or backward along the direction it is currently facing (the direction toward the mouse).
+
+func _physics_process(delta):
+
+    - Calls get_input() each physics frame to update facing and velocity.
+    - move_and_slide() — moves the body according to velocity while handling collisions and sliding (uses the node's velocity property set above).
+
+Now lets define our own inputs before we use this function:
+
+- Go to settings and search input map and define inputs for up, down, left, right and shoot.
