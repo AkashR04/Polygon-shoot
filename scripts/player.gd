@@ -2,6 +2,8 @@ extends CharacterBody2D
 
 
 const SPEED = 300.0
+@onready var start_bullet_pos = $start_bullet_pos
+var bullet_scene = preload("res://scenes/bullet.tscn")
 #const JUMP_VELOCITY = -400.0
 func get_input():
 	# This makes the characters right side keep facing the position the mouse is in.
@@ -12,6 +14,12 @@ func get_input():
 	#Multiply it by variable speed to define the speed at which it would be moving example -300 or 300
 	velocity.x = Input.get_axis("left","right") * SPEED
 	velocity.y = Input.get_axis("up","down") * SPEED
+	if Input.is_action_just_pressed("shoot"):
+		var bullet = bullet_scene.instantiate()
+		bullet.global_position = start_bullet_pos.global_position
+		$/root/Game.add_child(bullet)
+
+		bullet.direction = (get_global_mouse_position() - global_position).normalized()
 	#Lets use lerp function to make the movement a little bit smoother
 	#This makes adding real velocity to current velocity bit smoother
 	velocity = lerp(get_real_velocity(), velocity, 0.1)

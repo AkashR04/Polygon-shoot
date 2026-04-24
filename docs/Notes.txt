@@ -92,3 +92,48 @@ func _physics_process(delta):
 Now lets define our own inputs before we use this function:
 
 - Go to settings and search input map and define inputs for up, down, left, right and shoot.
+
+Gun and shooting:
+
+Now lets create a new a polygon2d to show as gun and move the player as a whole to make the center of gravity remain the same
+
+For the bullet we are going to be using an Area2D node:
+
+- Just create a circle collision shape to create the outline for you to use polygon 2d to create the bullet
+
+- Area2D is a region of 2D space defined by one or multiple CollisionShape2D or CollisionPolygon2D child nodes. It detects when other CollisionObject2Ds enter or exit it, and it also keeps track of which collision objects haven't exited it yet (i.e. which one are overlapping it).
+
+Now to add shooting in Player script:
+
+- detect when we click the controls for shoot we can use Input.is_action_just_pressed("pass_action") to detect if we pressed shoot or not
+
+- GDScript has a simplified @GDScript.preload() built-in method which can be used in most situations, leaving the use of ResourcePreloader for more advanced scenarios. lets use this to create a class in a variable bullet_scene which will have the blueprint of the bullet scene loaded into it
+
+- To create you just have to use the method in the scene(bullet_scene.instantiate()) to create an instance of the bullet
+
+- Now instead of calculating where the bullet's position is supposed to be, lets just create a new node2d and use its position for the bullet
+
+- Use the prebuilt variable in the scene called global_position to give the position of the node and make it equal to the position of the node2d node for position.
+
+@onready annotation
+
+When using nodes, it's common to desire to keep references to parts of the scene in a variable. As scenes are only warranted to be configured when entering the active scene tree, the sub-nodes can only be obtained when a call to Node._ready() is made.
+
+	var my_label
+
+
+	func _ready():
+		my_label = get_node("MyLabel")
+
+This can get a little cumbersome, especially when nodes and external references pile up. For this, GDScript has the @onready annotation, that defers initialization of a member variable until _ready() is called. It can replace the above code with a single line:
+
+	@onready var my_label = get_node("MyLabel")
+
+- Now to make the bullet actually move in a direction we need to write a script to set direction for the bullet to move:
+
+	- Now create and SPEED to variable to make it move from its global_position to the next.
+
+
+
+
+
