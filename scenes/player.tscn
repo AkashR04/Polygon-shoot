@@ -2,6 +2,14 @@
 
 [ext_resource type="Script" uid="uid://7cna8rg76py0" path="res://scripts/player.gd" id="1_3vyb7"]
 
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_3vyb7"]
+radius = 8.0
+height = 32.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_g2els"]
+radius = 19.0
+height = 80.0
+
 [node name="Player" type="CharacterBody2D" unique_id=1945577251]
 script = ExtResource("1_3vyb7")
 
@@ -16,10 +24,15 @@ scale = Vector2(1.1111112, 1)
 color = Color(0.59690315, 1, 0.7309574, 1)
 polygon = PackedVector2Array(-48, -32, 24, -16, 24, 16, -48, 32)
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="." unique_id=970367974]
-position = Vector2(0, 2.3841858e-07)
-scale = Vector2(0.93749994, 0.7578125)
-polygon = PackedVector2Array(-48, -32, 32, -16, 32, -8, 64, -8, 64, 8, 32, 8, 32, 16, -48, 32)
-
 [node name="start_bullet_pos" type="Node2D" parent="." unique_id=746473218]
 position = Vector2(72, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1470691452]
+position = Vector2(48, 0)
+rotation = 1.5707964
+shape = SubResource("CapsuleShape2D_3vyb7")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="." unique_id=1104657149]
+position = Vector2(-8, 0)
+rotation = 1.5707964
+shape = SubResource("CapsuleShape2D_g2els")
