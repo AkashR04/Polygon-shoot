@@ -92,3 +92,179 @@ func _physics_process(delta):
 Now lets define our own inputs before we use this function:
 
 - Go to settings and search input map and define inputs for up, down, left, right and shoot.
+
+Gun and shooting:
+
+Now lets create a new a polygon2d to show as gun and move the player as a whole to make the center of gravity remain the same
+
+For the bullet we are going to be using an Area2D node:
+
+- Just create a circle collision shape to create the outline for you to use polygon 2d to create the bullet
+
+- Area2D is a region of 2D space defined by one or multiple CollisionShape2D or CollisionPolygon2D child nodes. It detects when other CollisionObject2Ds enter or exit it, and it also keeps track of which collision objects haven't exited it yet (i.e. which one are overlapping it).
+
+Now to add shooting in Player script:
+
+- detect when we click the controls for shoot we can use Input.is_action_just_pressed("pass_action") to detect if we pressed shoot or not
+
+- GDScript has a simplified @GDScript.preload() built-in method which can be used in most situations, leaving the use of ResourcePreloader for more advanced scenarios. lets use this to create a class in a variable bullet_scene which will have the blueprint of the bullet scene loaded into it
+
+- To create you just have to use the method in the scene(bullet_scene.instantiate()) to create an instance of the bullet
+
+- Now instead of calculating where the bullet's position is supposed to be, lets just create a new node2d and use its position for the bullet
+
+- Use the prebuilt variable in the scene called global_position to give the position of the node and make it equal to the position of the node2d node for position.
+
+@onready annotation
+
+When using nodes, it's common to desire to keep references to parts of the scene in a variable. As scenes are only warranted to be configured when entering the active scene tree, the sub-nodes can only be obtained when a call to Node._ready() is made.
+
+	var my_label
+
+
+	func _ready():
+		my_label = get_node("MyLabel")
+
+This can get a little cumbersome, especially when nodes and external references pile up. For this, GDScript has the @onready annotation, that defers initialization of a member variable until _ready() is called. It can replace the above code with a single line:
+
+	@onready var my_label = get_node("MyLabel")
+
+- Now to make the bullet actually move in a direction we need to write a script to set direction for the bullet to move:
+
+	- Now create and SPEED to variable to make it move from its global_position to the next.
+
+
+
+- Lets use static body 2d for walls and world boundary shape for collision one thing to keep in mind is the direction the arrow points is the direction is opposite to the direction other bodies can collide
+
+Now, lets create an enemy with a character body, polygon2d and collisionshape2d:
+
+- Now enemy needs to move towards the players, so we need to create a script for the enemies so we can make the enemy move towards the player.
+
+- So, we have need to use physics_process() to move the enemy and we can now declare prebuilt velocity variable of the enemy
+
+- We will use this equation to make enemy move towards the player: velocity = (player.global_position - global_position).normalized() * SPEED
+
+Let's walk through a concrete numeric example step-by-step. Assume 2D positions, SPEED = 200 (pixels/sec), and one physics frame with delta = 1/60 s (not required to compute direction but for movement distance).
+
+Given:
+
+    enemy global_position = (100, 150)
+    player global_position = (300, 100)
+    SPEED = 200
+
+    Compute the direction vector (player - enemy)
+
+    dir = player - enemy = (300, 100) - (100, 150) = (200, -50)
+
+    Get its length (magnitude)
+
+    |dir| = sqrt(200^2 + (-50)^2) = sqrt(40000 + 2500) = sqrt(42500) ≈ 206.155
+
+    Normalize the direction (unit vector)
+
+    dir.normalized() = dir / |dir| = (200/206.155, -50/206.155) ≈ (0.9701, -0.2425)
+
+    Multiply by SPEED to get velocity
+
+    velocity = dir.normalized() * 200 ≈ (0.9701200, -0.2425200) ≈ (194.02, -48.50) pixels/sec
+
+    Movement during one physics frame (delta = 1/60 ≈ 0.0166667 s)
+
+    displacement = velocity * delta ≈ (194.02 * 0.0166667, -48.50 * 0.0166667)
+    displacement ≈ (3.2337, -0.8083)
+
+    New enemy position after that frame
+
+    new_position = enemy_position + displacement ≈ (100 + 3.2337, 150 - 0.8083) ≈ (103.2337, 149.1917)
+
+What this shows
+
+    The normalized vector gives direction only (unit length ≈ 1). Multiplying by SPEED sets the enemy's speed to exactly 200 pixels/sec regardless of distance.
+    Each frame the enemy moves a small step toward the player (here ~3.23 px right and ~0.81 px up). Repeating each physics frame moves the enemy along the straight line toward the player at constant speed.
+
+Another quick example (player very close)
+
+    enemy = (100,100), player = (105,104)
+    dir = (5,4), |dir| = sqrt(25+16)=sqrt(41)≈6.403
+    normalized ≈ (0.781,0.624)
+    velocity = (0.781200,0.624200) ≈ (156.2,124.8) px/s
+    displacement per frame ≈ (2.603,2.080) → moves toward player without overshooting quickly because direction is preserved and speed fixed.
+
+Now we need to randomly spawn the enemies in the game:
+
+- For this lets create a new script for the game
+
+- To make the enemies spawn after a given time use a timer node and use its signal to spawn enemies, we'll keep wait time as 0.5 so enemies spawn every 0.5 seconds and check autostart so we don't have to start in script and make sure to uncheck oneshot so that the timer keeps repeating
+
+- To make the enemies spawn away from the player:
+
+	- Use preload to load enemy scene into the script so we can instantiate new enemies in the script itself.
+
+	- Now instantiate a new enemy in the timer
+
+	- Now we need the player position so load it onto a onready variable
+	
+	- enemy.global_position = player.global_position
+
+    		Temporarily places the new enemy at the player's position.
+
+	- while enemy.global_position.distance_squared_to(player.global_position) < 10000:
+
+		Repeats the loop while the squared distance between enemy and player is less than 10000.
+
+		Squared distance avoids an expensive sqrt; 10000 corresponds to a distance of 100 units (because 100^2 = 10000).
+
+
+	- enemy.global_position.x = randi_range(0, get_viewport_rect().size.x)
+
+ 	- enemy.global_position.y = randi_range(0, get_viewport_rect().size.y)
+
+		Randomly repositions the enemy anywhere inside the viewport rectangle on each iteration.
+
+	- add_child(enemy)
+		
+		Adds the enemy node to the scene tree so it becomes active and visible.
+
+- Now to make the enemy look at the player use look_at() function and pass the player's global_position in the enemy script
+
+- Now to make the enemy and bullet disappear when the bullet hits an enemy:
+
+	- Use a signal from bullet called body_entered to do some action is the enemy is what the body has collided with
+
+	- Now create a global group called enemies so that if any instance of the enemy is hit we can take an action
+
+	- now from body use is_in_group function to check if it is an enemy if so body.queue_free() to remove enemy from scene and queue_free() to remove bullet from scene.
+
+- Now to make if player hit the enemy to reload the scene:
+
+	- First, we need to check all collisions on player in the player script
+
+	- for i in range(get_slide_collision_count()):
+
+    		Iterates over all collisions reported by the most recent move_and_slide/move_and_collide call. get_slide_collision_count() returns how many slide collisions occurred this physics step.
+
+	- var collision = get_slide_collision(i)
+
+   		 Retrieves the i‑th SlideCollision object. It contains info like collider, position, normal, travel, etc.
+
+	- Now we need to check if collision is in group enemies and scene is not already reloading for that create flag is_reload with @onready tag
+
+	- if collision.get_collider().is_in_group("enemies") and not is_reload:
+
+	- Checks two things:
+
+        		The object we collided with (collision.get_collider()) belongs to the "enemies" group.
+
+       		 A boolean flag is_reload is false (prevents repeated reloads).
+
+	- is_reload = true
+
+    		Sets the flag so the reload only happens once per trigger.
+
+	- get_tree().reload_current_scene()
+
+    		Reloads the currently active scene (effectively restarts the level).
+
+
+
