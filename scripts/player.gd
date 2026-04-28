@@ -6,6 +6,7 @@ const SPEED = 300.0
 @onready var is_reload = false
 var bullet_scene = preload("res://scenes/bullet.tscn")
 #const JUMP_VELOCITY = -400.0
+
 func get_input():
 	# This makes the characters right side keep facing the position the mouse is in.
 	look_at(get_global_mouse_position())

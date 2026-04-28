@@ -266,5 +266,43 @@ Now we need to randomly spawn the enemies in the game:
 
     		Reloads the currently active scene (effectively restarts the level).
 
+Now lets make the enemy explode if the player shoots the enemy
 
+- We can use CPU particles 2D to create the effect
+
+- Now lets increase the no. of particles to 50 in the inspector 
+
+- Make gravity zero to make the pixels to stop flowing downwards
+
+- Increase the min to 120 and max velocity to 180 to stop the pixels from staying in the center
+
+- Increase the spread to 180 to make the particles move in all directions
+
+- Increase the min scale to 10 to max to 15 to make the particles bigger
+
+- To make particles smaller as it goes sway lets make a scale curve and make it 1 at the beginning and zero at the end
+
+- Make lifetime to 0.4 seconds and explosiveness to 0.86 to get that explosion like feel
+
+- Make it oneshot and emitting to false
+
+- Now lets add it to the bullet script so that you can add explosion when the bullet hits the enemy:
+	
+	- Use preload to load the scene to variable in the script
+
+	- instantiate it to variable when the bullet hits an enemy
+
+	- Set its position to the bullet's global position
+
+	- Set emitting to true
+
+	- Set lifetime to a random range to create variation in explosion using randf_range() function.
+
+Now lets add glow to the game
+
+	- Create a world environment node in the game
+
+	- Add environment in inspector
+	
+	- Add mode as canvas keep intensity as 1.6, bloom at 0.14 and hdr threshold at 0.3
 
