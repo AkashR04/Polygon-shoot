@@ -11,6 +11,13 @@
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_lbhrr"]
 
+[sub_resource type="Environment" id="Environment_yqjtg"]
+background_mode = 3
+glow_enabled = true
+glow_intensity = 1.66
+glow_bloom = 0.14
+glow_hdr_threshold = 0.3
+
 [node name="Game" type="Node2D" unique_id=1088870385]
 script = ExtResource("1_yqjtg")
 
@@ -39,5 +46,8 @@ shape = SubResource("WorldBoundaryShape2D_lbhrr")
 [node name="Timer" type="Timer" parent="." unique_id=1957408267]
 wait_time = 0.5
 autostart = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1152513366]
+environment = SubResource("Environment_yqjtg")
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
